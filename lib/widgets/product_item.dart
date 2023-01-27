@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/product.dart';
 import '../screens/product_detail_screen.dart';
+import '../providers/cart.dart';
 
 class ProductItem extends StatelessWidget {
   const ProductItem({super.key});
@@ -13,37 +14,45 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final productItem = Provider.of<Product>(context);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: GridTile(
-        footer: GridTileBar(
-            backgroundColor: Colors.black87,
-            leading: IconButton(
-              icon: Icon(
-                productItem.isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: Theme.of(context).accentColor,
+    // final productItem = Provider.of<Product>(context);
+    final cart = Provider.of<Cart>(context, listen: false);
+    return Consumer<Product>(
+      builder: (context, productItem, child) => ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: GridTile(
+          footer: GridTileBar(
+              backgroundColor: Colors.black87,
+              leading: IconButton(
+                icon: Icon(
+                  productItem.isFavorite
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color: Theme.of(context).accentColor,
+                ),
+                onPressed: () {
+                  productItem.toggleFavoriteStatus();
+                },
               ),
-              onPressed: () {
-                productItem.toggleFavoriteStatus();
-              },
-            ),
-            trailing: IconButton(
-              icon: Icon(
-                Icons.shopping_cart_outlined,
-                color: Theme.of(context).accentColor,
+              trailing: IconButton(
+                icon: Icon(
+                  Icons.shopping_cart_outlined,
+                  color: Theme.of(context).accentColor,
+                ),
+                onPressed: () {
+                  cart.addItem(
+                      productItem.id, productItem.price, productItem.title);
+                },
               ),
-              onPressed: () {},
+              title: Text(
+                productItem.title,
+                textAlign: TextAlign.center,
+              )),
+          child: GestureDetector(
+            onTap: () => selectProduct(context, productItem.id),
+            child: Image.network(
+              productItem.imageUrl,
+              fit: BoxFit.cover,
             ),
-            title: Text(
-              productItem.title,
-              textAlign: TextAlign.center,
-            )),
-        child: GestureDetector(
-          onTap: () => selectProduct(context, productItem.id),
-          child: Image.network(
-            productItem.imageUrl,
-            fit: BoxFit.cover,
           ),
         ),
       ),
