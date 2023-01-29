@@ -40,7 +40,21 @@ class ProductItem extends StatelessWidget {
                 ),
                 onPressed: () {
                   cart.addItem(
-                      productItem.id, productItem.price, productItem.title);
+                      productItem.id!, productItem.price, productItem.title);
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: const Text(
+                      'Successfully added item to cart.',
+                    ),
+                    backgroundColor: Colors.green,
+                    duration: const Duration(seconds: 2),
+                    action: SnackBarAction(
+                        label: 'UNDO',
+                        textColor: Theme.of(context).primaryColor,
+                        onPressed: () {
+                          cart.removeSingleItem(productItem.id!);
+                        }),
+                  ));
                 },
               ),
               title: Text(
@@ -48,7 +62,7 @@ class ProductItem extends StatelessWidget {
                 textAlign: TextAlign.center,
               )),
           child: GestureDetector(
-            onTap: () => selectProduct(context, productItem.id),
+            onTap: () => selectProduct(context, productItem.id!),
             child: Image.network(
               productItem.imageUrl,
               fit: BoxFit.cover,
