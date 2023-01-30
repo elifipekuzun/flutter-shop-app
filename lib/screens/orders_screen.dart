@@ -5,22 +5,56 @@ import '../providers/orders.dart' show Orders;
 import '../widgets/order_item.dart';
 import '../widgets/app_drawer.dart';
 
-class OrdersScreen extends StatelessWidget {
+class OrdersScreen extends StatefulWidget {
   static const routeName = '/orders';
   const OrdersScreen({super.key});
 
   @override
+  State<OrdersScreen> createState() => _OrdersScreenState();
+}
+
+class _OrdersScreenState extends State<OrdersScreen> {
+  late Future _ordersFuture;
+
+  Future _obtainOrdersFuture() {
+    return Provider.of<Orders>(context, listen: false).fetchOrders();
+  }
+
+  @override
+  void initState() {
+    _ordersFuture = _obtainOrdersFuture();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final ordersData = Provider.of<Orders>(context);
-    final orders = ordersData.orders;
     return Scaffold(
       appBar: AppBar(title: const Text('Orders')),
       drawer: const AppDrawer(),
-      body: ListView.builder(
-          itemCount: orders.length,
-          itemBuilder: (ctx, index) => OrderItem(
-                order: orders[index],
-              )),
+      body: FutureBuilder(
+        future: _ordersFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            if (snapshot.error != null) {
+              return const Center(
+                child: Text('An error occurred!'),
+              );
+            } else {
+              return Consumer<Orders>(
+                builder: (context, orderData, child) => ListView.builder(
+                    itemCount: orderData.orders.length,
+                    itemBuilder: (ctx, index) => OrderItem(
+                          order: orderData.orders[index],
+                        )),
+              );
+            }
+          }
+        },
+      ),
     );
   }
 }
