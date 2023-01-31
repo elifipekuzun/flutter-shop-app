@@ -13,6 +13,7 @@ import './providers/products_provider.dart';
 import './providers/cart.dart';
 import './providers/orders.dart';
 import './providers/auth.dart';
+import './helpers/custom_route.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,10 +36,10 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: ((_) => Cart())),
         ChangeNotifierProxyProvider<Auth, Orders>(
-          create: (_) => Orders(null, '', []),
+          create: (_) => Orders(null, null, []),
           update: (context, authData, previousOrders) => Orders(
               authData.token,
-              authData.userId!,
+              authData.userId,
               previousOrders == null ? [] : previousOrders.orders),
         ),
       ],
@@ -48,7 +49,11 @@ class MyApp extends StatelessWidget {
               theme: ThemeData(
                   primarySwatch: Colors.purple,
                   accentColor: Colors.deepOrange,
-                  fontFamily: 'Lato'),
+                  fontFamily: 'Lato',
+                  pageTransitionsTheme: PageTransitionsTheme(builders: {
+                    TargetPlatform.android: CustomPageTransitionBuilder(),
+                    TargetPlatform.iOS: CustomPageTransitionBuilder(),
+                  })),
               home: authData.isAuth
                   ? const ProductsOverviewScreeen()
                   : FutureBuilder(

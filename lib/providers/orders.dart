@@ -20,7 +20,7 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   String? authToken;
-  String userId;
+  String? userId;
 
   List<OrderItem> _orders = [];
 
