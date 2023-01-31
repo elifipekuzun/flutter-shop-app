@@ -45,11 +45,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
               );
             } else {
               return Consumer<Orders>(
-                builder: (context, orderData, child) => ListView.builder(
-                    itemCount: orderData.orders.length,
-                    itemBuilder: (ctx, index) => OrderItem(
-                          order: orderData.orders[index],
-                        )),
+                builder: (context, orderData, child) => orderData.orders.isEmpty
+                    ? const Center(
+                        child: Text('No Orders Found.'),
+                      )
+                    : ListView.builder(
+                        itemCount: orderData.orders.length,
+                        itemBuilder: (ctx, index) => OrderItem(
+                              order: orderData.orders[index],
+                            )),
               );
             }
           }
